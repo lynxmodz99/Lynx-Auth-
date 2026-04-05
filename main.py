@@ -304,16 +304,7 @@ async def user_login(data: ApiLoginRequest, request: Request, bg_tasks: Backgrou
 
     return {"success": True, "message": "Login successful.", "info": {"expires": u_data['expires_at']}}
 
-# /seller/delete endpoint is disabled in the opensource build.
-# @app.post("/seller/delete")
-# def delete_seller(data: SellerDeleteRequest):
-#     db.collection('sellers').where('ownerid', '==', data.ownerid).limit(1).get()[0].reference.delete()
-#     apps = db.collection('applications').where('ownerid', '==', data.ownerid).stream()
-#     for a in apps:
-#         users = db.collection('users').where('appid', '==', a.get('appid')).stream()
-#         for u in users: u.reference.delete()
-#         a.reference.delete()
-#     return {"status": "success"}
+
 
 @app.post("/apps/webhook/save")
 def save_webhook(data: WebhookSaveRequest):
