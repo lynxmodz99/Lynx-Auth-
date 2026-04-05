@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+gunicorn
+pydantic
+firebase-admin
+requests
+httpx

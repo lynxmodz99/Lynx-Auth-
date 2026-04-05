@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LYNX | Auth</title>
+    <link rel="icon" type="image/png" href="Assets/logo.png">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+
+<body>
+
+
+    <div id="popup-overlay" class="popup-backdrop" onclick="closePopupBackground(event)">
+        <div class="popup-card">
+            <div id="popup-icon" class="popup-icon-area"></div>
+            <h3 id="popup-title" style="margin:10px 0 5px 0;">Success</h3>
+            <p id="popup-message" style="color:#888; margin-bottom:20px; font-size:0.9rem;">Operation completed.</p>
+            <button onclick="closePopup()" class="btn-primary-sm" style="width:100%; padding:10px;">Okay, got
+                it</button>
+        </div>
+    </div>
+
+
+    <div id="auth-view" class="auth-container">
+        <div class="auth-bg-pattern"></div>
+        <div class="auth-glow"></div>
+        <div class="auth-panel">
+            <div class="auth-header">
+                <div class="logo-icon-container"><i class="fa-solid fa-shield-cat"></i></div>
+                <h1>LYNX AUTH</h1>
+                <p>Seller Dashboard</p>
+            </div>
+            <div id="login-form">
+                <div class="input-group">
+                    <input type="email" id="login-email" class="auth-input" placeholder="Email">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-password" class="auth-input" placeholder="Password">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <button onclick="emailLogin()" class="btn-login" id="login-btn">Sign In</button>
+                <div class="divider"><span>OR</span></div>
+                <button onclick="googleLogin()" class="btn-google"><i class="fa-brands fa-google"></i> Login With
+                    Google</button>
+                <div class="toggle-link"><span>New?</span> <a onclick="showRegisterForm()">Create Account</a></div>
+            </div>
+            <div id="register-form" style="display:none;">
+                <div class="input-group">
+                    <input type="email" id="reg-email" class="auth-input" placeholder="Email">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="reg-password" class="auth-input" placeholder="Password">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <button onclick="emailRegister()" class="btn-login">Register</button>
+                <div class="toggle-link"><span>Have account?</span> <a onclick="showLoginForm()">Login</a></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="dashboard-view" class="dashboard-container">
+        <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
+        <aside class="sidebar">
+            <div class="sidebar-close-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></div>
+            <div class="sidebar-profile">
+                <div class="avatar-circle">A</div>
+                <div>
+                    <div style="font-weight:600; font-size:0.9rem;">Admin</div>
+                    <div id="sidebar-email" style="font-size:0.75rem; color:#666;">...</div>
+                </div>
+            </div>
+            <nav style="flex:1;">
+                <div class="nav-btn-side active" onclick="showView('dashboard')" id="nav-dash"><i
+                        class="fa-solid fa-chart-pie"></i> Overview</div>
+                <div class="nav-btn-side" onclick="showView('applications')" id="nav-apps"><i
+                        class="fa-solid fa-layer-group"></i> Applications</div>
+
+                <div class="nav-btn-side" onclick="showView('users')" id="nav-users"><i class="fa-solid fa-users"></i>
+                    Users</div>
+
+
+                <div class="nav-btn-side" onclick="showView('integration')" id="nav-integration"><i
+                        class="fa-solid fa-code"></i> Client Integration</div>
+                <div class="nav-btn-side" onclick="showView('instructions')" id="nav-instructions"><i
+                        class="fa-solid fa-book"></i> Instructions</div>
+                <div class="nav-btn-side" onclick="showView('webhooks')" id="nav-webhooks"><i
+                        class="fa-brands fa-discord"></i> Webhooks</div>
+            </nav>
+            <div style="border-top:1px solid #222; padding-top:20px;">
+                <div class="nav-btn-side" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </div>
+                <div class="nav-btn-side" onclick="deleteAccount()" style="color:var(--danger)"><i
+                        class="fa-solid fa-trash"></i> Delete Account</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-nav">
+                <div class="mobile-toggle" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></div>
+                <h2 style="margin:0;">Dashboard</h2>
+                <div class="sys-badge" id="status-badge"><span id="status-dot"
+                        style="width:6px; height:6px; background:currentColor; border-radius:50%;"></span> <span
+                        id="status-text">Online</span></div>
+            </header>
+
+
+            <div id="dashboard-content" class="content-view active">
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-title">Balance</div>
+                        <div class="stat-num" id="stat-coins" style="color: #FFD700;">Loading...</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-title">Subscription</div>
+                        <div class="stat-num" id="stat-sub" style="font-size:1.1rem;">Loading...</div>
+                    </div>
+
+
+                    <div class="stat-box">
+                        <div class="stat-title">Applications</div>
+                        <div class="stat-num" id="stat-total-apps">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-title">Status</div>
+                        <div class="stat-num" style="color:var(--success); font-size:1.2rem;">Active</div>
+                    </div>
+                </div>
+                <div class="panel-card">
+                    <div class="panel-head">
+                        <h3>Seller Keys</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="secret-box" style="margin:0;">
+                            <span>OwnerID: <span id="ownerid-display" style="color:white;">Syncing...</span></span>
+                            <i class="fa-solid fa-copy copy-icon" onclick="copyToClipboard('ownerid-display')"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="applications-content" class="content-view">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
+                    <h3 style="margin:0;">Applications</h3>
+                    <button class="btn-primary-sm"
+                        onclick="document.getElementById('new-app-panel').style.display='block'">+ New App</button>
+                </div>
+
+                <div id="new-app-panel" class="panel-card" style="display:none; padding:20px;">
+                    <div style="margin-bottom:10px; font-size:0.8rem; color:#888;">Cost: <span
+                            style="color:var(--primary);">100 Coins</span> (Free for Premium)</div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="app-name-input" class="auth-input" style="background:#111; margin:0;"
+                            placeholder="App Name">
+                        <button class="btn-primary-sm" onclick="createApp()">Create</button>
+                        <button class="btn-ghost-sm"
+                            onclick="document.getElementById('new-app-panel').style.display='none'">Cancel</button>
+                    </div>
+                </div>
+
+                <div id="apps-list"></div>
+            </div>
+
+
+            <div id="users-content" class="content-view">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2 style="margin:0; font-size:1.5rem;">User Management</h2>
+                    <button class="btn-primary-sm" onclick="showView('applications')"><i class="fa-solid fa-plus"></i>
+                        Create User</button>
+                </div>
+
+                <div class="user-controls-bar">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="user-search" placeholder="Search users by name..."
+                            onkeyup="filterUsers()">
+                    </div>
+                    <div class="filter-wrapper">
+
+                        <div class="custom-dropdown" id="custom-app-dropdown">
+
+                            <div class="dropdown-trigger" onclick="toggleAppDropdown()">
+                                <span id="dropdown-selected-text">Select Application</span>
+                                <i class="fa-solid fa-chevron-down arrow"></i>
+                            </div>
+
+                            <div class="dropdown-options-container" id="dropdown-options-list">
+
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="user-app-filter" value="">
+                    </div>
+                </div>
+
+                <div class="users-table-container">
+                    <div class="users-table-header">
+                        <div style="flex:1">USER</div>
+                        <div style="flex:1">STATUS ( HWID )</div>
+                        <div style="flex:1">EXPIRY</div>
+                        <div style="width:100px; text-align:right;">ACTIONS</div>
+                    </div>
+                    <div id="users-table-body" class="users-table-body">
+                        <div class="empty-state">Select an application to view users.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="integration-content" class="content-view">
+                <h3 style="margin-bottom:15px;">Client Integration</h3>
+                <p style="color:#888; margin-bottom:20px; font-size:0.9rem;">Copy the snippet below or download the full
+                    example projects.</p>
+
+                <div class="terminal-window">
+                    <div class="terminal-bar">
+                        <div class="terminal-dots">
+                            <div class="dot dot-red"></div>
+                            <div class="dot dot-yellow"></div>
+                            <div class="dot dot-green"></div>
+                        </div>
+                        <div class="terminal-tabs">
+                            <div class="t-tab active" id="tab-cs" onclick="switchTab('cs')">auth.cs</div>
+                            <div class="t-tab" id="tab-py" onclick="switchTab('py')">auth.py</div>
+                        </div>
+                        <button class="btn-ghost-sm" style="padding:2px 8px; font-size:0.75rem;"
+                            onclick="downloadCurrentCode()">
+                            <i class="fa-solid fa-file-code"></i> Save Snippet
+                        </button>
+                    </div>
+                    <div class="terminal-content">
+                        <pre id="code-view" style="margin:0; white-space:pre-wrap;"></pre>
+                    </div>
+                </div>
+
+
+                <div style="margin-top:20px; display:flex; gap:15px; flex-wrap:wrap;">
+                    <div class="download-card" onclick="downloadProject('cs')">
+                        <div class="dl-icon"><i class="fa-brands fa-windows"></i></div>
+                        <div>
+                            <div style="font-weight:600; font-size:0.9rem;">C# Example</div>
+                            <div style="font-size:0.75rem; color:#666;">Full Visual Studio (CONSOLE APP EXAMPLE)</div>
+                        </div>
+                        <i class="fa-solid fa-download" style="margin-left:auto; color:#444;"></i>
+                    </div>
+                    <div class="download-card" onclick="downloadProject('py')">
+                        <div class="dl-icon"><i class="fa-brands fa-python"></i></div>
+                        <div>
+                            <div style="font-weight:600; font-size:0.9rem;">Python Example</div>
+                            <div style="font-size:0.75rem; color:#666;">Full Source Script (CONSOLE APP EXAMPLE
+
+
+
+                                )</div>
+                        </div>
+                        <i class="fa-solid fa-download" style="margin-left:auto; color:#444;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div id="instructions-content" class="content-view">
+                <h3 style="margin-bottom:20px;">Instructions</h3>
+
+                <div class="discord-msg-container">
+                    <div class="discord-avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div class="discord-body">
+                        <div class="discord-header">System <span class="bot-tag">BOT</span> <span
+                                class="discord-time">Today at 1:14 PM</span></div>
+
+                        <div class="discord-text">
+                            To get started, make sure you have your <code class="d-code">OwnerID</code> ready from the
+                            dashboard.
+                        </div>
+
+                        <div class="discord-text" style="margin-top:10px;">
+                            1. Create an application in the <b>Applications</b> tab.<br>
+                            2. Copy your <code class="d-code">App Secret</code>.
+                        </div>
+
+                        <div class="discord-text" style="margin-top:10px;">
+                            Run the following command to install requirements (Python):
+                        </div>
+                        <div class="discord-block">pip install requests colorama</div>
+                    </div>
+                </div>
+
+                <div class="discord-msg-container">
+                    <div class="discord-avatar" style="background:#202225;"><i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <div class="discord-body">
+                        <div class="discord-header">Downloads <span class="discord-time">Today at 1:20 PM</span></div>
+                        <div class="discord-text">
+                            You can download the full pre-configured example projects here:
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                            <div class="discord-file-btn" onclick="downloadProject('cs')">
+                                <i class="fa-solid fa-file-zipper" style="color:#6366f1;"></i>
+                                <span style="margin-left:8px;">c#_example.rar</span>
+                            </div>
+                            <div class="discord-file-btn" onclick="downloadProject('py')">
+                                <i class="fa-solid fa-file-zipper" style="color:#FFD43B;"></i>
+                                <span style="margin-left:8px;">python_example.rar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="discord-msg-container">
+                    <div class="discord-avatar" style="background:#faa61a;"><i
+                            class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="discord-body">
+                        <div class="discord-header">Important <span class="discord-time">Today at 1:15 PM</span></div>
+                        <div class="discord-text">
+                            Never share your <code class="d-code">App Secret</code> with anyone! If compromised, delete
+                            the app immediately.
+                        </div>
+                        <div class="discord-header"> <span class="discord-time"></span></div>
+                        <div class="discord-text">
+                            same auth.cs will be used for <code class="d-code">Csharp</code> ui or other apps . ( if
+                            required install suitable libraries. like "Newtonsoft.Json"
+                            )
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="webhooks-content" class="content-view">
+                <div class="wh-grid-container">
+                    <div class="wh-card">
+                        <div class="wh-card-header">
+                            <i class="fa-solid fa-share-nodes"></i> DISCORD WEBHOOK SYNC
+                        </div>
+
+                        <div class="wh-section">
+                            <label class="wh-label">SELECT APPLICATION</label>
+                            <select id="wh-app-select" class="wh-input-text" onchange="loadWebhookSettings()">
+                                <option value="" disabled selected>Select an App...</option>
+                            </select>
+                        </div>
+
+                        <div class="wh-section">
+                            <label class="wh-label">WEBHOOK ENDPOINT URL</label>
+                            <div class="wh-input-wrapper">
+                                <input type="text" id="wh-url" class="wh-input-text"
+                                    placeholder="https://discord.com/api/webhooks/...">
+                            </div>
+                        </div>
+
+                        <div class="wh-section">
+                            <label class="wh-label">EVENT SUBSCRIPTION & CONFIG</label>
+                            <div class="wh-event-list">
+                                <div class="wh-event-row">
+                                    <span>Enable Webhook</span>
+                                    <label class="switch-small"><input type="checkbox" id="wh-enabled"><span
+                                            class="slider-small"></span></label>
+                                </div>
+                                <div class="wh-event-row">
+                                    <span>Show App Name</span>
+                                    <label class="switch-small"><input type="checkbox" id="wh-show-app"><span
+                                            class="slider-small"></span></label>
+                                </div>
+                                <div class="wh-event-row">
+                                    <span>Show HWID</span>
+                                    <label class="switch-small"><input type="checkbox" id="wh-show-hwid"><span
+                                            class="slider-small"></span></label>
+                                </div>
+
+                                <div class="wh-event-row">
+                                    <span>Show License Expiry</span>
+                                    <label class="switch-small"><input type="checkbox" id="wh-show-exp"><span
+                                            class="slider-small"></span></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="wh-save-btn" onclick="saveWebhook()">SAVE WEBHOOK CONFIGURATION</button>
+                    </div>
+
+                    <div class="wh-card bot-card-dimmed">
+                        <div class="wh-card-header">
+                            <i class="fa-solid fa-robot"></i> PUBLIC INTERROGATION
+                            <span class="bot-badge">UNAVAILABLE</span>
+                        </div>
+
+                        <p class="bot-desc">
+                            Bridge the gap between your community and your infrastructure.
+                            Manage users directly within Discord.
+                        </p>
+
+                        <div class="bot-features">
+                            <div class="bot-feat-item">
+                                <div class="bot-icon"><i class="fa-solid fa-users-viewfinder"></i></div>
+                                <div>
+                                    <div class="bf-title">LIVE INTERROGATION</div>
+                                    <div class="bf-sub">Instantly view user activity and manage bans.</div>
+                                </div>
+                            </div>
+                            <div class="bot-feat-item">
+                                <div class="bot-icon"><i class="fa-solid fa-rocket"></i></div>
+                                <div>
+                                    <div class="bf-title">RAPID DEPLOYMENT</div>
+                                    <div class="bf-sub">Generate single or bulk licenses in seconds.</div>
+                                </div>
+                            </div>
+                            <div class="bot-feat-item">
+                                <div class="bot-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                                <div>
+                                    <div class="bf-title">ZERO COMPROMISE</div>
+                                    <div class="bf-sub">Industry-standard AES encryption across all channels.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bot-status-box unavailable">
+                            <div class="bs-title">STATUS: UNAVAILABLE</div>
+                            <div class="bs-sub">
+                                THIS FEATURE IS CURRENTLY UNDER MAINTENANCE OR DEVELOPMENT.<br>CHECK BACK LATER.
+                            </div>
+                            <button class="bot-invite-btn" disabled>
+                                <i class="fa-solid fa-lock"></i> INVITE LOCKED
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="manage-users-modal" class="modal-backdrop" style="display:none !important;"></div>
+
+
+    <div id="user-settings-modal" class="popup-backdrop" onclick="closeSettingsModal(event)">
+        <div class="popup-card" style="text-align:left; width: 400px; max-width:90%;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:15px; margin-bottom:20px;">
+                <h3 id="usm-title" style="margin:0;">User Settings</h3>
+                <div onclick="document.getElementById('user-settings-modal').style.display='none'"
+                    style="cursor:pointer; color:#666;"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+
+            <input type="hidden" id="usm-uid">
+
+
+            <div
+                style="background:#1a1a1a; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #333;">
+                <label style="font-size:0.75rem; color:#888; font-weight:700; display:block; margin-bottom:10px;">HWID
+                    SECURITY</label>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <span style="font-size:0.9rem; color:#eee;">Lock HWID to Device</span>
+                    <label class="switch-small">
+                        <input type="checkbox" id="usm-lock-toggle" onchange="updateLockStateFromModal()">
+                        <span class="slider-small"></span>
+                    </label>
+                </div>
+
+                <button class="btn-ghost-sm" style="width:100%; border-color:#444; color:#ccc;"
+                    onclick="resetHwidFromModal()">
+                    <i class="fa-solid fa-rotate-left"></i> Reset HWID
+                </button>
+            </div>
+
+            <div style="background:#1a1a1a; padding:15px; border-radius:8px; border:1px solid #333;">
+                <label
+                    style="font-size:0.75rem; color:#888; font-weight:700; display:block; margin-bottom:10px;">SUBSCRIPTION
+                    EXPIRY</label>
+
+                <input type="datetime-local" id="usm-date" class="auth-input"
+                    style="width:100%; margin-bottom:15px; background:#0f0f0f;">
+
+                <button class="btn-primary-sm" style="width:100%; padding:10px;" onclick="saveExpiryFromModal()">
+                    Update Date & Time
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

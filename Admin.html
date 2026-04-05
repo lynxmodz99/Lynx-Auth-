@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LynxAuth | Get Full Access</title>
+    <link rel="icon" type="image/png" href="web/Assets/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0d0d0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .logo-wrap img {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .logo-wrap span {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-wrap span em {
+            color: #a78bfa;
+            font-style: normal;
+        }
+
+        .tagline {
+            font-size: 0.82rem;
+            color: #555;
+            margin-bottom: 38px;
+            letter-spacing: 0.5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            width: 100%;
+            max-width: 820px;
+        }
+
+        @media (max-width: 620px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #141417;
+            border: 1px solid #222226;
+            border-radius: 16px;
+            padding: 28px 26px;
+        }
+
+        .card-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #555;
+            margin-bottom: 18px;
+        }
+
+
+        .dev-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .dev-avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .dev-avatar-wrap img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #222;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2.5px solid #141417;
+            background: #3ba55d;
+        }
+
+        .status-dot.offline {
+            background: #555;
+        }
+
+        .status-dot.idle {
+            background: #faa61a;
+        }
+
+        .status-dot.dnd {
+            background: #ed4245;
+        }
+
+        .dev-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .dev-info p {
+            font-size: 0.78rem;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .dev-status-text {
+            font-size: 0.74rem;
+            color: #a78bfa;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .dev-status-text span {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #3ba55d;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .dev-status-text span.offline {
+            background: #555;
+        }
+
+
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.84rem;
+            color: #bbb;
+        }
+
+        .feature-list li i {
+            color: #a78bfa;
+            font-size: 0.78rem;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+
+        .price-tag {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .price-tag span {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #555;
+        }
+
+        .price-desc {
+            font-size: 0.78rem;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: opacity 0.15s;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .btn-purple {
+            background: #7c3aed;
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #333;
+            color: #ccc;
+        }
+
+
+        .notice-label {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #f59e0b;
+            background: #1a1500;
+            border: 1px solid #3a2e00;
+            border-radius: 6px;
+            padding: 3px 8px;
+            margin-bottom: 14px;
+        }
+
+        .notice-text {
+            font-size: 0.82rem;
+            color: #888;
+            line-height: 1.65;
+        }
+
+        .notice-text strong {
+            color: #ccc;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .how-it-works {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 620px) {
+            .how-it-works {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .step {
+            background: #0d0d0f;
+            border: 1px solid #1c1c20;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .step-num {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #a78bfa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .step h4 {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #ddd;
+            margin-bottom: 6px;
+        }
+
+        .step p {
+            font-size: 0.78rem;
+            color: #666;
+            line-height: 1.55;
+        }
+
+        .footer-note {
+            margin-top: 32px;
+            font-size: 0.73rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .footer-note a {
+            color: #555;
+            text-decoration: none;
+        }
+
+        .footer-note a:hover {
+            color: #a78bfa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="logo-wrap">
+        <img src="web/Assets/logo.png" alt="LynxAuth Logo">
+        <span>Lynx<em>Auth</em></span>
+    </div>
+    <p class="tagline">contact the dev to get full access</p>
+
+    <div class="grid">
+
+
+        <div class="card">
+            <p class="card-title">Developer</p>
+            <div class="dev-card">
+                <div class="dev-avatar-wrap">
+                    <img id="devAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="lynx.x99 avatar">
+                    <div class="status-dot offline" id="statusDot"></div>
+                </div>
+                <div class="dev-info">
+                    <h3 id="devName">lynx.x99</h3>
+                    <p>Creator of LynxAuth</p>
+                    <div class="dev-status-text">
+                        <span id="statusIndicator" class="offline"></span>
+                        <span id="statusLabel">Fetching status...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <p class="card-title">Important Notice</p>
+            <div class="notice-label">Open Source Build</div>
+            <p class="notice-text">
+                This is <strong>not</strong> the actual LynxAuth source code. It's a simplified open-source
+                version released to show how HWID locking works at a basic level.<br><br>
+                The real product is way more powerful — contact the dev to buy the full build.
+            </p>
+        </div>
+
+
+        <div class="card">
+            <p class="card-title">What's in the Full Version</p>
+            <ul class="feature-list">
+                <li><i class="fa-solid fa-check"></i> Full Admin Panel with user management</li>
+                <li><i class="fa-solid fa-check"></i> Subscription system with tiers & expiry</li>
+                <li><i class="fa-solid fa-check"></i> Advanced HWID locking (multi-factor)</li>
+                <li><i class="fa-solid fa-check"></i> IP + device fingerprint tracking</li>
+                <li><i class="fa-solid fa-check"></i> Ban / unban system with logs</li>
+                <li><i class="fa-solid fa-check"></i> Webhook alerts & real-time monitoring</li>
+                <li><i class="fa-solid fa-check"></i> API structured for production scale</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <p class="card-title">Get Full Source</p>
+            <div class="price-tag">DM to enquire <span>/ source</span></div>
+            <p class="price-desc">
+                Pricing depends on what you need. Reach out on Discord or check the website for more info.
+            </p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <a href="https://discord.com/users/1481652276337709127" target="_blank" class="btn btn-purple">
+                    <i class="fa-brands fa-discord"></i> Message on Discord
+                </a>
+                <a href="https://lynxmodz.qzz.io/" target="_blank" class="btn btn-outline">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Website
+                </a>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <p class="card-title">How HWID Locking Works (Overview)</p>
+            <div class="how-it-works">
+                <div class="step">
+                    <div class="step-num">Step 01</div>
+                    <h4>User runs your app</h4>
+                    <p>When someone launches your software, it reads a unique hardware fingerprint from their machine —
+                        things like drive serial, CPU id, etc.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">Step 02</div>
+                    <h4>License is checked</h4>
+                    <p>The app sends the key + HWID to the auth server. The server checks if this key is valid and if
+                        the HWID matches what's on record.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">Step 03</div>
+                    <h4>Access granted or denied</h4>
+                    <p>If the key is valid and the HWID matches, the user gets in. If someone tries to share the key on
+                        a different machine, it gets blocked.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p class="footer-note">
+        LynxAuth &copy; 2025 &nbsp;|&nbsp; Open-source release &nbsp;|&nbsp;
+        <a href="https://lynxmodz.qzz.io/" target="_blank">lynxmodz.qzz.io</a>
+    </p>
+
+    <script>
+        async function loadPresence() {
+            try {
+                const res = await fetch('https://api.lanyard.rest/v1/users/1481652276337709127');
+                const data = await res.json();
+
+                if (!data.success) return;
+
+                const d = data.data;
+                const discord = d.discord_user;
+
+                const avatarHash = discord.avatar;
+                const userId = discord.id;
+
+                if (avatarHash) {
+                    document.getElementById('devAvatar').src =
+                        `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=128`;
+                }
+
+                const name = discord.global_name || discord.username || 'lynx.x99';
+                document.getElementById('devName').textContent = name;
+
+                const statusMap = {
+                    online: { label: 'Online', cls: '', dotCls: '' },
+                    idle: { label: 'Idle', cls: 'idle', dotCls: 'idle' },
+                    dnd: { label: 'Do Not Disturb', cls: 'dnd', dotCls: 'dnd' },
+                    offline: { label: 'Offline', cls: 'offline', dotCls: 'offline' },
+                };
+
+                const status = d.discord_status || 'offline';
+                const info = statusMap[status] || statusMap.offline;
+
+                const indicator = document.getElementById('statusIndicator');
+                const dot = document.getElementById('statusDot');
+                const label = document.getElementById('statusLabel');
+
+                indicator.className = info.cls;
+                dot.className = 'status-dot ' + info.dotCls;
+                label.textContent = info.label;
+
+                if (d.activities && d.activities.length > 0) {
+                    const act = d.activities[0];
+                    if (act.name && act.name !== 'Custom Status') {
+                        label.textContent = `${info.label} · ${act.name}`;
+                    }
+                }
+
+            } catch (e) {
+                document.getElementById('statusLabel').textContent = 'Status unavailable';
+            }
+        }
+
+        loadPresence();
+    </script>
+
+</body>
+
+</html>
