@@ -56,7 +56,8 @@ This prevents key sharing. One key = one machine. That's the whole point.
 Contact the developer:
 
 - **Discord:** lynx.x99
-- **Website:** [lynxmodz.qzz.io](https://lynxmodz.qzz.io/)
+- **Website:** [Lynx Auth](https://lynxauth.qzz.io/)
+- **About Owner** [Lynx modz](https://lynxmodz.qzz.io/)
 
 ---
 
