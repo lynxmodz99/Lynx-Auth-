@@ -58,6 +58,7 @@ Contact the developer:
 - **Discord:** lynx.x99
 - **Website:** [Lynx Auth](https://lynxauth.qzz.io/)
 - **About Owner** [Lynx modz](https://lynxmodz.qzz.io/)
+- **Support** [Lynx regedit](https://discord.gg/Vx43JXddFD)
 
 ---
 
